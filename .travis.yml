@@ -6,9 +6,8 @@ before_install:
 install:
     - sudo apt-get install -qq shunit2
 
-env: SHUNIT=/usr/share/shunit2/shunit2
-
 before_script:
     - cd test
+    - "export SHUNT=$(which shunit2)"
 
 script: ./test_vpnbook.sh

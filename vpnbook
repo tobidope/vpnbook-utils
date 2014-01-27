@@ -22,7 +22,7 @@ cleanup() {
 	rm -rf "$CONFIG_FOLDER_TEMP"
 }
 
-trap cleanup SIGHUP SIGINT SIGTERM
+trap cleanup HUP INT TERM
 
 usage() {
 	cat << EOF
@@ -42,7 +42,7 @@ EOF
 }
 
 download_site() {
-	local site=$1
+	local site="$1"
 	wget "$site" -q -O -
 }
 
@@ -56,7 +56,7 @@ extract_credentials() {
 }
 
 extract_config_urls() {
-	local site=$1
+	local site="$1"
 	awk -F '[<>]' -v site=$site '
 	/free-openvpn-account/ { split($4, a, /"/); print site a[2] }
 	'
@@ -113,7 +113,7 @@ main() {
 	AUTH_FILE=${auth_file:-$AUTH_FILE}
 	CONFIG_FOLDER=${config_folder:-$CONFIG_FOLDER}
 
-	local site_data=$(download_site "$SITE")
+	local site_data="$(download_site "$SITE")"
 	$generator_func "$site_data"
 	retval=$?
 	cleanup

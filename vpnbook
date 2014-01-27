@@ -1,0 +1,126 @@
+#!/bin/sh
+# 
+# 
+# Author: Tobias Bell <tobias.bell@gmail.com>
+
+PROGRAM="vpnbook"
+# URL to the site containing user and password
+SITE="http://www.vpnbook.com/freevpn"
+# URL to the site containing OpenVPN configs
+OPENVPN_SITE="http://www.vpnbook.com"
+# File where VPNBook credentials get stored
+AUTH_FILE="./vpnbook.auth"
+# Path to temporary file
+AUTH_FILE_TMP="/tmp/vpnbook.$$"
+# Folder where OpenVPN configs are created
+CONFIG_FOLDER="./"
+# Path to temporary folder for config generation
+CONFIG_FOLDER_TEMP="/tmp/vpnbook-config.$$"
+
+cleanup() {
+	rm -f "$AUTH_FILE_TMP"
+	rm -rf "$CONFIG_FOLDER_TEMP"
+}
+
+trap cleanup SIGHUP SIGINT SIGTERM
+
+usage() {
+	cat << EOF
+Usage: $PROGRAM <command> [parameter]
+
+Commands are
+    config  Generate OpenVPN configs for non-interactive usage based on configs provided
+            on $OPENVPN_SITE
+    auth    Extract user and password from $OPENVPN_SITE and save to auth_user_pass file
+            (default: $AUTH_FILE)
+
+Parameters are
+    -a <file>    Path to the auth_user_pass file (default: $AUTH_FILE)
+    -c <folder>  Folder where OpenVPN configs are generated (default: $CONFIG_FOLDER)
+    -h           Show this help
+EOF
+}
+
+download_site() {
+	local site=$1
+	wget "$site" -q -O -
+}
+
+extract_credentials() {
+	awk -F '[<>]' '
+	BEGIN { exit_value = 1 }
+	/Username:/ && !user_found { print $5; user_found = 1; next }
+	/Password:/ && user_found { print $5; exit_value = 0; exit } 
+	END { exit exit_value }
+	'
+}
+
+extract_config_urls() {
+	local site=$1
+	awk -F '[<>]' -v site=$site '
+	/free-openvpn-account/ { split($4, a, /"/); print site a[2] }
+	'
+}
+
+generate_auth() {
+	local data="$1"
+	if (echo "$data" | extract_credentials) > "$AUTH_FILE_TMP"; then
+		mv "$AUTH_FILE_TMP" "$AUTH_FILE"
+	fi
+}
+
+generate_config() {
+	local data="$1"
+	mkdir "$CONFIG_FOLDER_TEMP" || return
+	for url in $(echo "$site_data" | extract_config_urls "$OPENVPN_SITE"); do
+		local file=${url##*/}
+		local conf_file="vpnbook-${file##*-}"
+		conf_file=${conf_file%.zip}.ovpn
+		conf_file=$(echo $conf_file | tr 'A-Z' 'a-z')
+		echo $file $conf_file
+	done
+
+	generate_auth "$data"
+}
+
+main() {
+	case $1 in
+		config | auth )
+			generator_func="generate_$1"
+			;;
+		* )
+			usage
+			exit 1
+			;;
+	esac
+	shift
+
+	while getopts 'a:c:h' options; do
+		case $options in
+			a )
+				auth_file=$OPTARG
+				;;
+			c )
+				config_folder=$OPTARG
+				;;
+			h | \?)
+				usage
+				exit 1
+				;;
+		esac
+	done
+
+	AUTH_FILE=${auth_file:-$AUTH_FILE}
+	CONFIG_FOLDER=${config_folder:-$CONFIG_FOLDER}
+
+	local site_data=$(download_site "$SITE")
+	$generator_func "$site_data"
+	retval=$?
+	cleanup
+	return $retval
+}
+
+if [ "$PROGRAM" = ${0##*/} ]; then
+	main "$@"
+	exit $?
+fi

@@ -1,0 +1,14 @@
+language: shell
+
+before_install:
+	- sudo apt-get update
+
+install:
+	- sudo apt-get install -qq shunit2
+
+env: SHUNIT=/usr/share/shunit2/shunit2
+
+before_script:
+	- cd test
+
+script: ./test_vpnbokk.sh

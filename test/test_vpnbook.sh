@@ -1,14 +1,16 @@
 #!/bin/sh
 . ../vpnbook
 
-${SHUNIT:="./shunit2-2.1.6/src/shunit2"}
+if [ -z "$SHUNIT" ]; then
+	SHUNIT="./shunit2-2.1.6/src/shunit2"
+fi
 
-oneTimeSetUp() {
-	TEST_DATA=$(cat ./testdata/freevpn.html)
+get_test_data() {
+	cat "./testdata/freevpn.html"
 }
 
 test_extract_credentials() {
-	local result=$(echo "$TEST_DATA" | extract_credentials)
+	local result=$(get_test_data | extract_credentials)
 	local expected=$(cat <<-EOF
 		vpnbook
 		qe5Egawr
@@ -21,7 +23,7 @@ test_extract_credentials() {
 }
 
 test_extract_config_urls() {
-	local result=$(echo "$TEST_DATA" | extract_config_urls)
+	local result=$(get_test_data | extract_config_urls)
 	local expected=$(cat <<-EOF
 	http://www.vpnbook.com/free-openvpn-account/VPNBook.com-OpenVPN-Euro1.zip
 	http://www.vpnbook.com/free-openvpn-account/VPNBook.com-OpenVPN-Euro2.zip

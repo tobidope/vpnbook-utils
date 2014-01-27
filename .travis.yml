@@ -8,6 +8,6 @@ install:
 
 before_script:
     - cd test
-    - "export SHUNT=$(which shunit2)"
+    - "export SHUNIT=$(which shunit2)"
 
 script: ./test_vpnbook.sh

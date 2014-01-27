@@ -6,6 +6,7 @@ ${SHUNIT:="./shunit2-2.1.6/src/shunit2"}
 oneTimeSetUp() {
 	TEST_DATA=$(cat ./testdata/freevpn.html)
 }
+
 test_extract_credentials() {
 	local result=$(echo "$TEST_DATA" | extract_credentials)
 	local expected=$(cat <<-EOF

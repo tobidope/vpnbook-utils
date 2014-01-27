@@ -11,4 +11,4 @@ env: SHUNIT=/usr/share/shunit2/shunit2
 before_script:
     - cd test
 
-script: ./test_vpnbokk.sh
+script: ./test_vpnbook.sh

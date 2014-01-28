@@ -5,6 +5,11 @@ if [ -z "$SHUNIT" ]; then
 	SHUNIT="./shunit2-2.1.6/src/shunit2"
 fi
 
+case $(uname -s) in
+	Darwin)  statmode() { stat -f '%p' "$1" | cut -b 4-; };;
+	Linux )  statmode() { stat -c '%a' "$1"; };;
+esac
+
 get_test_data() {
 	cat "./testdata/freevpn.html"
 }
@@ -46,7 +51,7 @@ test_generate_auth() {
 	generate_auth "$(get_test_data)"
 	assertTrue $?
 	assertTrue "[ -f $AUTH_FILE ]"
-	assertEquals "100600" "$(stat -f '%p' $AUTH_FILE)"
+	assertEquals "600" "$(statmode $AUTH_FILE)"
 }
 
 . "$SHUNIT"

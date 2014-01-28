@@ -41,4 +41,12 @@ test_generate_vpn_config() {
 	assertEquals "$expected" "$result"
 }
 
+test_generate_auth() {
+	AUTH_FILE="${SHUNIT_TMPDIR}/a"
+	generate_auth "$(get_test_data)"
+	assertTrue $?
+	assertTrue "[ -f $AUTH_FILE ]"
+	assertEquals "100600" "$(stat -f '%p' $AUTH_FILE)"
+}
+
 . "$SHUNIT"

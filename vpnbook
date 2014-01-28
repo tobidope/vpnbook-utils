@@ -66,6 +66,7 @@ generate_auth() {
 	local data="$1"
 	if (echo "$data" | extract_credentials) > "$AUTH_FILE_TMP"; then
 		mv "$AUTH_FILE_TMP" "$AUTH_FILE"
+		chmod 600 "$AUTH_FILE"
 	fi
 }
 

@@ -31,7 +31,7 @@ Usage: $PROGRAM <command> [parameter]
 Commands are
     config  Generate OpenVPN configs for non-interactive usage based on configs provided
             on $OPENVPN_SITE
-    auth    Extract user and password from $OPENVPN_SITE and save to auth_user_pass file
+    auth    Extract user and password from $OPENVPN_SITE and save to auth-user-pass file
             (default: $AUTH_FILE)
 
 Parameters are
@@ -69,15 +69,41 @@ generate_auth() {
 	fi
 }
 
+generate_vpn_config() {
+	awk -v auth_file="$AUTH_FILE" '
+	{ sub(/\r$/, "") }
+	/^remote/ {
+		host = $2; print
+		print $1, host, 25000
+		next
+	}
+	/^resolv-retry/ {
+		print "remote-random"
+		print $1, 300
+		next
+	}
+	/^auth-user-pass/ {
+		print $1, auth_file
+		print "auth-retry nointeract"
+		next
+	}
+	/^<ca>/ {
+		print "ns-cert-type server"
+	}
+	1
+	'
+}
+
 generate_config() {
 	local data="$1"
 	mkdir "$CONFIG_FOLDER_TEMP" || return
 	for url in $(echo "$site_data" | extract_config_urls "$OPENVPN_SITE"); do
-		local file=${url##*/}
+		local file="$CONFIG_FOLDER_TEMP/${url##*/}"
 		local conf_file="vpnbook-${file##*-}"
 		conf_file=${conf_file%.zip}.ovpn
-		conf_file=$(echo $conf_file | tr 'A-Z' 'a-z')
-		echo $file $conf_file
+		conf_file="$CONFIG_FOLDER/$(echo $conf_file | tr 'A-Z' 'a-z')"
+		wget "$url" -O "$file" -q
+		unzip -p "$file"  '*udp53*.ovpn' | generate_vpn_config > "$conf_file"
 	done
 
 	generate_auth "$data"

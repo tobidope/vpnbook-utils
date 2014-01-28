@@ -34,4 +34,11 @@ test_extract_config_urls() {
 	assertEquals "$expected" "$result"
 }
 
+test_generate_vpn_config() {
+	local expected="$(cat ./testdata/output.ovpn)"
+	local result="$(cat ./testdata/vpnbook-euro1-udp53.ovpn | generate_vpn_config)"
+
+	assertEquals "$expected" "$result"
+}
+
 . "$SHUNIT"

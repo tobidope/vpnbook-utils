@@ -75,11 +75,7 @@ generate_vpn_config() {
 	/^remote/ {
 		host = $2; print
 		print $1, host, 25000
-		next
-	}
-	/^resolv-retry/ {
 		print "remote-random"
-		print $1, 300
 		next
 	}
 	/^auth-user-pass/ {

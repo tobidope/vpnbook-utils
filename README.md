@@ -1,7 +1,4 @@
-vpnbook-utils
-=============
-
-[![Build Status](https://api.travis-ci.org/tobidope/vpnbook-utils.png)](https://travis-ci.org/tobidope/vpnbook-utils)
+# About vpnbook-utils [![Build Status](https://api.travis-ci.org/tobidope/vpnbook-utils.png)](https://travis-ci.org/tobidope/vpnbook-utils)
 
 ## What
 
@@ -17,7 +14,7 @@ To generate the intial configs do this
 
 	vpnbook config
 
-This will generate an config file for each vpnbook server
+This will generate a config file for each vpnbook server
 
  * vpnbook-euro1.ovpn
  * vpnbook-euro2.ovpn

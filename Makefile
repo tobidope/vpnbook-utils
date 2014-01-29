@@ -1,17 +1,24 @@
-.PHONY : clean test deploy all
+SH := /usr/local/bin/dash
+MARKDOWN := multimarkdown
 
-all : test
+.PHONY : clean test deploy all doc
+
+all : test doc
+
+doc : README.html
 
 deploy : test vpnbook test/* Makefile
 	git commit -a
 	git push
 
 test : test/shunit2-2.1.6
-	cd test && ./test_vpnbook.sh
+	cd test && $(SH) ./test_vpnbook.sh
 
 test/shunit2-2.1.6 :
 	wget "https://shunit2.googlecode.com/files/shunit2-2.1.6.tgz" -qO - | tar xz -C test
 
-clean :
-	rm *.ovpn *.html vpnbook.auth
+%.html : *.md
+	$(MARKDOWN) $< -o $@
 
+clean :
+	$(RM) *.ovpn *.html vpnbook.auth

@@ -1,3 +1,13 @@
 language: shell
 
-script: make test
+before_install:
+    - sudo apt-get update
+
+install:
+    - sudo apt-get install -qq shunit2
+
+before_script:
+    - cd test
+    - "export SHUNIT=$(which shunit2)"
+
+script: ./test_vpnbook.sh

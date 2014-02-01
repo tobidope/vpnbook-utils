@@ -71,7 +71,9 @@ generate_auth() {
 
 generate_vpn_config() {
 	awk -v auth_file="$AUTH_FILE" '
+	# Remove windows newline
 	{ sub(/\r$/, "") }
+	# Add both ports in config file and let OpenVPN select them remote-random
 	/^remote/ {
 		host = $2; print
 		print $1, host, 25000
@@ -81,15 +83,18 @@ generate_vpn_config() {
 		}
 		next
 	}
+	# Switch authentication from interactive to file based
 	/^auth-user-pass/ {
 		print $1, auth_file
 		print "auth-retry nointeract"
 		next
 	}
+	# Let OpenVPN check the remote certificate
 	/^<ca>/ {
 		print "ns-cert-type server"
 	}
-	1
+	# Output everything else unchanged
+	{ print }
 	'
 }
 

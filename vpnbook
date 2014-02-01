@@ -1,7 +1,6 @@
 #!/bin/sh
-# 
-# 
-# Author: Tobias Bell <tobias.bell@gmail.com>
+# The MIT License (MIT)
+# Copyright (c) 2014 Tobias Bell <tobias.bell@gmail.com>
 
 PROGRAM="vpnbook"
 # URL to the site containing user and password

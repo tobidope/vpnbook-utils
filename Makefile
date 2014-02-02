@@ -7,7 +7,7 @@ all : test doc
 
 doc : README.html
 
-deploy : test vpnbook test/* Makefile
+deploy : test
 	git commit -a
 	git push
 

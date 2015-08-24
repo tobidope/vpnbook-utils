@@ -6,7 +6,7 @@ With this little tool you can generate OpenVPN config files for the free VPN pro
 [vpnbook.com](http://www.vpnbook.com) which are usable in a non interactive environment.
 For example your [OpenWRT](https://openwrt.org/) based router. As an added bonus it also
 extracts the ever changing credentials from the vpnbook.com website. Add the call to extract
-the credentials to yout crontab and you will never have to touch your vpn configs again.
+the credentials to your crontab and you will never have to touch your vpn configs again.
 
 ## How
 

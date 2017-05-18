@@ -42,7 +42,7 @@ EOF
 
 download_site() {
 	local site="$1"
-	wget "$site" -q -O -
+	curl "$site" -s
 }
 
 extract_credentials() {

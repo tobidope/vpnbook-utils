@@ -4,9 +4,9 @@
 
 PROGRAM="vpnbook"
 # URL to the site containing user and password
-SITE="http://www.vpnbook.com/freevpn"
+SITE="https://www.vpnbook.com/freevpn"
 # URL to the site containing OpenVPN configs
-OPENVPN_SITE="http://www.vpnbook.com"
+OPENVPN_SITE="https://www.vpnbook.com"
 # File where VPNBook credentials get stored
 AUTH_FILE="./vpnbook.auth"
 # Path to temporary file
@@ -106,7 +106,7 @@ generate_config() {
 		local conf_file="vpnbook-${file##*-}"
 		conf_file=${conf_file%.zip}.ovpn
 		conf_file="$CONFIG_FOLDER/$(echo $conf_file | tr 'A-Z' 'a-z')"
-		wget "$url" -O "$file" -q
+		curl "$url" -o "$file" -s
 		unzip -p "$file"  '*udp53*.ovpn' | generate_vpn_config > "$conf_file"
 	done
 
